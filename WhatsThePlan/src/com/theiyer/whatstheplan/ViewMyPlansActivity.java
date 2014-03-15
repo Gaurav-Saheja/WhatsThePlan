@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,30 +45,36 @@ public class ViewMyPlansActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.view_plan);
-		ActionBar aBar = getActionBar();
-		Resources res = getResources();
-		Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
-		aBar.setBackgroundDrawable(actionBckGrnd);
-		aBar.setTitle(" Plan Information");
+		if(haveInternet(this)){
+			setContentView(R.layout.view_plan);
+			ActionBar aBar = getActionBar();
+			Resources res = getResources();
+			Drawable actionBckGrnd = res.getDrawable(R.drawable.actionbar);
+			aBar.setBackgroundDrawable(actionBckGrnd);
+			aBar.setTitle(" Plan Information");
 
-		SharedPreferences prefs = getSharedPreferences("Prefs",
-				Activity.MODE_PRIVATE);
-		String userName = prefs.getString("userName", "New User");
-		TextView userNameValue = (TextView) findViewById(R.id.welcomeViewPlanLabel);
-		userNameValue.setText(userName + ", here's selected plan details!");
+			SharedPreferences prefs = getSharedPreferences("Prefs",
+					Activity.MODE_PRIVATE);
+			String userName = prefs.getString("userName", "New User");
+			TextView userNameValue = (TextView) findViewById(R.id.welcomeViewPlanLabel);
+			userNameValue.setText(userName + ", here's selected plan details!");
 
-		selectedGroup = prefs.getString("selectedGroup", "New User");
-		selectedPlan = prefs.getString("selectedPlan", "New User");
-		TextView selectedPlanValue = (TextView) findViewById(R.id.viewPlanTitle);
-		selectedPlanValue.setText(" " + selectedPlan);
+			selectedGroup = prefs.getString("selectedGroup", "New User");
+			selectedPlan = prefs.getString("selectedPlan", "New User");
+			TextView selectedPlanValue = (TextView) findViewById(R.id.viewPlanTitle);
+			selectedPlanValue.setText(" " + selectedPlan);
 
-		String searchQuery = "/fetchPlan?planName="
-				+ selectedPlan.replace(" ", "%20");
-		String phone = prefs.getString("phone", "");
+			String searchQuery = "/fetchPlan?planName="
+					+ selectedPlan.replace(" ", "%20");
+			String phone = prefs.getString("phone", "");
 
-		WebServiceClient restClient = new WebServiceClient(this);
-		restClient.execute(new String[] { searchQuery, phone });
+			WebServiceClient restClient = new WebServiceClient(this);
+			restClient.execute(new String[] { searchQuery, phone });
+		} else {
+			Intent intent = new Intent(this, RetryActivity.class);
+			startActivity(intent);
+		}
+		
 	}
 
 	/** Called when the user clicks the see members button */
@@ -331,4 +339,24 @@ public class ViewMyPlansActivity extends Activity {
 
 	}
 
+	/**
+	 * Checks if we have a valid Internet Connection on the device.
+	 * 
+	 * @param ctx
+	 * @return True if device has internet
+	 * 
+	 *         Code from: http://www.androidsnippets.org/snippets/131/
+	 */
+	public static boolean haveInternet(Context ctx) {
+
+		NetworkInfo info = (NetworkInfo) ((ConnectivityManager) ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+
+		if (info == null || !info.isConnected()) {
+			return false;
+		}
+
+		return true;
+	}
 }

@@ -19,7 +19,7 @@ import android.util.Log;
 
 public class CalendarHelper extends AsyncTask<String, String, String> {
 
-	// Projection array. Creating indices for this array instead of doing
+	// Projection tr array. Creating indices for this array instead of doing
 	// dynamic lookups improves performance.
 	public static final String[] EVENT_PROJECTION = new String[] {
 	    Calendars._ID,                           // 0

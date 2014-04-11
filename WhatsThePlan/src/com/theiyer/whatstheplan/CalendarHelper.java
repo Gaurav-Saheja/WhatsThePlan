@@ -27,7 +27,7 @@ public class CalendarHelper extends AsyncTask<String, String, String> {
 	    Calendars.CALENDAR_DISPLAY_NAME,         // 2
 	    Calendars.OWNER_ACCOUNT                  // 3
 	};
-	  
+	    
 	
 	public String name;
 	public String id;
